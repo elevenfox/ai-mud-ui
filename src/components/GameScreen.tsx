@@ -68,10 +68,10 @@ export function GameScreen() {
         )}
       </AnimatePresence>
 
-      {/* 5. 隐藏/显示 UI 按钮 - 始终显示 */}
+      {/* 5. 隐藏/显示 UI 按钮 - 始终显示（在存档按钮下方） */}
       <button
         onClick={() => setHideUI(!hideUI)}
-        className="absolute top-4 right-4 z-50 p-2 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm border border-white/20 transition-all group"
+        className="absolute top-[72px] right-4 z-50 p-2 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm border border-white/20 transition-all group"
         title={hideUI ? '显示界面' : '隐藏界面（查看完整画面）'}
       >
         {hideUI ? (
