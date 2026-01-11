@@ -1,13 +1,15 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useGameStore, NPC } from '@/store/gameStore';
+import { useGameStore, NPC, Player } from '@/store/gameStore';
 import clsx from 'clsx';
 
 /**
  * CharacterDisplay - 沉浸式角色立绘显示组件
  * 
  * 分为左、中、右三个区域，最多同时显示 3 个角色
+ * - 玩家角色默认显示在右侧
+ * - NPC 按其 position 属性显示
  * 角色立绘从底部延伸，营造视觉小说风格
  */
 export function CharacterDisplay() {
@@ -21,9 +23,12 @@ export function CharacterDisplay() {
   // 如果正在对话，高亮显示对话对象
   const isHighlighted = (npc: NPC) => talkingToNpc?.id === npc.id;
 
+  // 玩家显示在右侧（如果右侧没有 NPC）
+  const showPlayerOnRight = rightNpcs.length === 0 && player?.portrait_url;
+
   return (
     <div className="absolute inset-0 pointer-events-none flex items-end justify-between px-4 pb-64">
-      {/* 左侧区域 */}
+      {/* 左侧区域 - NPC */}
       <div className="flex-1 flex justify-start items-end">
         <AnimatePresence>
           {leftNpcs.slice(0, 1).map(npc => (
@@ -38,7 +43,7 @@ export function CharacterDisplay() {
         </AnimatePresence>
       </div>
 
-      {/* 中间区域 */}
+      {/* 中间区域 - NPC */}
       <div className="flex-1 flex justify-center items-end">
         <AnimatePresence>
           {centerNpcs.slice(0, 1).map(npc => (
@@ -53,9 +58,14 @@ export function CharacterDisplay() {
         </AnimatePresence>
       </div>
 
-      {/* 右侧区域 */}
+      {/* 右侧区域 - 玩家或 NPC */}
       <div className="flex-1 flex justify-end items-end">
         <AnimatePresence>
+          {/* 优先显示玩家角色 */}
+          {showPlayerOnRight && player && (
+            <PlayerSprite key="player" player={player} position="right" />
+          )}
+          {/* 如果有右侧 NPC，显示 NPC */}
           {rightNpcs.slice(0, 1).map(npc => (
             <CharacterSprite
               key={npc.id}
@@ -70,6 +80,63 @@ export function CharacterDisplay() {
     </div>
   );
 }
+
+// ============== 玩家角色立绘 ==============
+
+interface PlayerSpriteProps {
+  player: Player;
+  position: 'left' | 'center' | 'right';
+}
+
+function PlayerSprite({ player, position }: PlayerSpriteProps) {
+  const slideDirection = position === 'left' ? -100 : position === 'right' ? 100 : 0;
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: slideDirection, y: 50 }}
+      animate={{ opacity: 1, x: 0, y: 0 }}
+      exit={{ opacity: 0, x: slideDirection, y: 50 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+      className="relative"
+    >
+      {/* 玩家立绘 */}
+      <div className="relative w-48 h-80 md:w-56 md:h-96 lg:w-64 lg:h-[28rem]">
+        {player.portrait_url ? (
+          <img
+            src={player.portrait_url}
+            alt={player.name}
+            className="w-full h-full object-contain object-bottom"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = 'none';
+            }}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-t from-cyber-dark/80 to-transparent rounded-t-2xl">
+            <span className="text-6xl text-cyber-pink/50">{player.name[0]}</span>
+          </div>
+        )}
+
+        {/* 玩家名字标签 - 用不同颜色区分 */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-black/70 backdrop-blur-sm border border-cyber-pink"
+        >
+          <p className="text-sm font-display whitespace-nowrap text-cyber-pink">
+            {player.name}
+          </p>
+        </motion.div>
+
+        {/* 玩家标识 */}
+        <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-cyber-pink/20 border border-cyber-pink/50">
+          <span className="text-xs text-cyber-pink">YOU</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ============== NPC 角色立绘 ==============
 
 interface CharacterSpriteProps {
   npc: NPC;
