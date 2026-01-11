@@ -23,14 +23,22 @@ export function CharacterDisplay() {
   // 如果正在对话，高亮显示对话对象
   const isHighlighted = (npc: NPC) => talkingToNpc?.id === npc.id;
 
-  // 玩家显示在右侧（如果右侧没有 NPC）
-  const showPlayerOnRight = rightNpcs.length === 0 && player?.portrait_url;
+  // 玩家位置由 player.position 决定
+  const playerPosition = player?.position || 'right';
+  const showPlayerLeft = playerPosition === 'left' && player?.portrait_url;
+  const showPlayerCenter = playerPosition === 'center' && player?.portrait_url;
+  const showPlayerRight = playerPosition === 'right' && player?.portrait_url;
 
   return (
     <div className="absolute inset-0 pointer-events-none flex items-end justify-between px-4 pb-64">
-      {/* 左侧区域 - NPC */}
-      <div className="flex-1 flex justify-start items-end">
+      {/* 左侧区域 */}
+      <div className="flex-1 flex justify-start items-end gap-2">
         <AnimatePresence>
+          {/* 玩家在左侧 */}
+          {showPlayerLeft && player && (
+            <PlayerSprite key="player" player={player} position="left" />
+          )}
+          {/* 左侧 NPC */}
           {leftNpcs.slice(0, 1).map(npc => (
             <CharacterSprite
               key={npc.id}
@@ -43,9 +51,14 @@ export function CharacterDisplay() {
         </AnimatePresence>
       </div>
 
-      {/* 中间区域 - NPC */}
-      <div className="flex-1 flex justify-center items-end">
+      {/* 中间区域 */}
+      <div className="flex-1 flex justify-center items-end gap-2">
         <AnimatePresence>
+          {/* 玩家在中间 */}
+          {showPlayerCenter && player && (
+            <PlayerSprite key="player" player={player} position="center" />
+          )}
+          {/* 中间 NPC */}
           {centerNpcs.slice(0, 1).map(npc => (
             <CharacterSprite
               key={npc.id}
@@ -58,14 +71,10 @@ export function CharacterDisplay() {
         </AnimatePresence>
       </div>
 
-      {/* 右侧区域 - 玩家或 NPC */}
-      <div className="flex-1 flex justify-end items-end">
+      {/* 右侧区域 */}
+      <div className="flex-1 flex justify-end items-end gap-2">
         <AnimatePresence>
-          {/* 优先显示玩家角色 */}
-          {showPlayerOnRight && player && (
-            <PlayerSprite key="player" player={player} position="right" />
-          )}
-          {/* 如果有右侧 NPC，显示 NPC */}
+          {/* 右侧 NPC */}
           {rightNpcs.slice(0, 1).map(npc => (
             <CharacterSprite
               key={npc.id}
@@ -75,6 +84,10 @@ export function CharacterDisplay() {
               onClick={() => startTalkingTo(npc)}
             />
           ))}
+          {/* 玩家在右侧 */}
+          {showPlayerRight && player && (
+            <PlayerSprite key="player" player={player} position="right" />
+          )}
         </AnimatePresence>
       </div>
     </div>

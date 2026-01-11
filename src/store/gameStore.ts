@@ -50,6 +50,7 @@ export interface Player {
   portrait_url?: string;
   personality?: string;
   background?: string;
+  position: 'left' | 'center' | 'right';
 }
 
 export interface ChoicesResponse {
