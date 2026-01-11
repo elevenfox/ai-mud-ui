@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Orbitron:wght@400;500;700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cyber-blue: #00d4ff;
+  --cyber-pink: #ff00ff;
+  --cyber-purple: #9d00ff;
+  --cyber-green: #00ff9d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: #0a0a0f;
+  color: #e0e0e0;
+  font-family: 'JetBrains Mono', monospace;
+  overflow: hidden;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #12121a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00d4ff33;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00d4ff66;
+}
+
+/* Neon text effects */
+.neon-text {
+  text-shadow: 
+    0 0 5px var(--cyber-blue),
+    0 0 10px var(--cyber-blue),
+    0 0 20px var(--cyber-blue);
+}
+
+.neon-text-pink {
+  text-shadow: 
+    0 0 5px var(--cyber-pink),
+    0 0 10px var(--cyber-pink),
+    0 0 20px var(--cyber-pink);
+}
+
+/* Glowing borders */
+.neon-border {
+  border: 1px solid #00d4ff33;
+  box-shadow: 
+    0 0 5px #00d4ff22,
+    inset 0 0 5px #00d4ff11;
+}
+
+.neon-border:hover {
+  border-color: #00d4ff66;
+  box-shadow: 
+    0 0 10px #00d4ff33,
+    inset 0 0 10px #00d4ff22;
+}
+
+/* CRT scanline effect */
+.scanlines::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.1) 2px,
+    rgba(0, 0, 0, 0.1) 4px
+  );
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* Typing animation for narrative */
+.typing-effect {
+  overflow: hidden;
+  white-space: pre-wrap;
+  animation: typing 0.5s steps(1) forwards;
+}
+
+@keyframes typing {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Choice button hover effect */
+.choice-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.choice-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 212, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.choice-btn:hover::before {
+  left: 100%;
+}
+
+/* Portrait frame */
+.portrait-frame {
+  position: relative;
+  border: 2px solid #00d4ff44;
+  background: linear-gradient(135deg, #12121a 0%, #1a1a24 100%);
+}
+
+.portrait-frame::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #00d4ff, #ff00ff, #00d4ff);
+  z-index: -1;
+  opacity: 0.3;
+  filter: blur(4px);
+}
+
+/* Background with vignette */
+.game-background {
+  position: relative;
+}
+
+.game-background::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 40%,
+    rgba(10, 10, 15, 0.8) 100%
+  );
+  pointer-events: none;
+}
