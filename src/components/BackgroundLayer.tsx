@@ -20,11 +20,16 @@ export function BackgroundLayer({ backgroundUrl }: BackgroundLayerProps) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1 }}
-          style={{
-            background: backgroundUrl 
-              ? `url(${backgroundUrl}) center/cover no-repeat`
-              : defaultBg,
-          }}
+          style={
+            backgroundUrl 
+              ? {
+                  backgroundImage: `url('${backgroundUrl}')`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                }
+              : { background: defaultBg }
+          }
         />
       </AnimatePresence>
       

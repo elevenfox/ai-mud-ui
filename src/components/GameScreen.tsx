@@ -20,6 +20,10 @@ import { TopBar } from './TopBar';
 export function GameScreen() {
   const { location, talkingToNpc } = useGameStore();
 
+  // DEBUG: 检查 location 数据
+  console.log('[GameScreen] location:', location);
+  console.log('[GameScreen] background_url:', location?.background_url);
+
   return (
     <div className="h-screen w-screen relative overflow-hidden bg-black">
       {/* 1. 背景层 - 全屏场景图片 */}
