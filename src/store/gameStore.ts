@@ -58,6 +58,7 @@ export interface ChoicesResponse {
   choices: Choice[];
   allow_custom: boolean;
   mood: string;
+  character_positions?: Record<string, 'left' | 'center' | 'right'>;
 }
 
 interface GameState {
