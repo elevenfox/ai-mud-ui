@@ -260,6 +260,7 @@ function LocationEditor({
     name: location?.name || '',
     description: location?.description || '',
     tags: location?.tags?.join(', ') || '',
+    is_starting_location: location?.is_starting_location || false,
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -276,6 +277,7 @@ function LocationEditor({
         tags: form.tags
           ? form.tags.split(',').map((s) => s.trim()).filter(Boolean)
           : [],
+        is_starting_location: form.is_starting_location,
       };
 
       if (isNew) {
@@ -329,6 +331,19 @@ function LocationEditor({
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-green-500 text-white h-40"
             />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="is_starting_location"
+              checked={form.is_starting_location}
+              onChange={(e) => setForm({ ...form, is_starting_location: e.target.checked })}
+              className="w-4 h-4 rounded bg-slate-700 border-slate-600 text-green-600 focus:ring-green-500"
+            />
+            <label htmlFor="is_starting_location" className="text-sm text-gray-300">
+              🚀 可作为初始场景（游戏开始时随机选择）
+            </label>
           </div>
 
           {error && (
@@ -661,7 +676,14 @@ function LocationsTab() {
 
               {/* Info */}
               <div className="p-4">
-                <h3 className="font-bold text-white">{loc.name}</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold text-white">{loc.name}</h3>
+                  {loc.is_starting_location && (
+                    <span className="text-xs bg-green-600/30 text-green-300 px-2 py-0.5 rounded">
+                      🚀 初始场景
+                    </span>
+                  )}
+                </div>
                 <p className="text-sm text-gray-400 line-clamp-2 mt-1">{loc.description || '暂无描述'}</p>
                 {loc.tags && loc.tags.length > 0 && (
                   <div className="flex gap-1 mt-2 flex-wrap">

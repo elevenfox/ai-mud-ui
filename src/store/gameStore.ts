@@ -16,6 +16,7 @@ export interface NPC {
   relationship: number;
   portrait_url?: string;
   first_message?: string;
+  position: 'left' | 'center' | 'right';
 }
 
 export interface Location {

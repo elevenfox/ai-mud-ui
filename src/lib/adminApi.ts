@@ -84,6 +84,7 @@ export interface LocationTemplate {
   tags: string[];
   default_connections: string[];
   default_characters: string[];
+  is_starting_location: boolean;
   raw_card_data?: Record<string, unknown>;
   created_at?: string;
   updated_at?: string;
@@ -300,6 +301,11 @@ export const adminApi = {
         id: string;
         name: string;
         portrait_url?: string;
+      };
+      starting_location?: {
+        id: string;
+        name: string;
+        background_url?: string;
       };
     }>(
       '/avatar/select',
