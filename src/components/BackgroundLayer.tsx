@@ -15,7 +15,7 @@ export function BackgroundLayer({ backgroundUrl }: BackgroundLayerProps) {
       <AnimatePresence mode="wait">
         <motion.div
           key={backgroundUrl || 'default'}
-          className="absolute inset-0 game-background"
+          className="absolute inset-0 game-background w-full h-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -23,12 +23,18 @@ export function BackgroundLayer({ backgroundUrl }: BackgroundLayerProps) {
           style={
             backgroundUrl 
               ? {
+                  width: '100%',
+                  height: '100%',
                   backgroundImage: `url('${backgroundUrl}')`,
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                   backgroundRepeat: 'no-repeat',
                 }
-              : { background: defaultBg }
+              : { 
+                  width: '100%',
+                  height: '100%',
+                  background: defaultBg 
+                }
           }
         />
       </AnimatePresence>
