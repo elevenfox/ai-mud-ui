@@ -804,12 +804,23 @@ function RulesTab() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [newRule, setNewRule] = useState('');
+  
+  // 经济系统配置
+  const [economy, setEconomy] = useState({
+    currency_name: '金币',
+    gem_name: '宝石',
+    currency_rules: '',
+  });
+  const [economyLoading, setEconomyLoading] = useState(true);
+  const [economySaving, setEconomySaving] = useState(false);
 
   useEffect(() => {
     loadRules();
+    loadEconomy();
   }, []);
 
   const loadRules = async () => {
+    setLoading(true);
     try {
       const result = await adminApi.getWorldRules();
       setRules(result.rules || []);
@@ -818,6 +829,22 @@ function RulesTab() {
       console.error('Failed to load rules:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadEconomy = async () => {
+    setEconomyLoading(true);
+    try {
+      const result = await adminApi.getEconomyConfig();
+      setEconomy({
+        currency_name: result.currency_name || '金币',
+        gem_name: result.gem_name || '宝石',
+        currency_rules: result.currency_rules || '',
+      });
+    } catch (err) {
+      console.error('加载经济配置失败:', err);
+    } finally {
+      setEconomyLoading(false);
     }
   };
 
@@ -830,6 +857,18 @@ function RulesTab() {
       alert(err instanceof Error ? err.message : '保存失败');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSaveEconomy = async () => {
+    setEconomySaving(true);
+    try {
+      await adminApi.updateEconomyConfig(economy);
+      alert('经济配置保存成功');
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '保存失败');
+    } finally {
+      setEconomySaving(false);
     }
   };
 
