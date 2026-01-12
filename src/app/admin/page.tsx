@@ -833,6 +833,18 @@ function RulesTab() {
     }
   };
 
+  const handleSaveEconomy = async () => {
+    setEconomySaving(true);
+    try {
+      await adminApi.updateEconomyConfig(economy);
+      alert('经济配置保存成功');
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '保存失败');
+    } finally {
+      setEconomySaving(false);
+    }
+  };
+
   const addRule = () => {
     if (newRule.trim()) {
       setRules([...rules, newRule.trim()]);
@@ -910,6 +922,72 @@ function RulesTab() {
           >
             ➕ 添加
           </button>
+        </div>
+      </div>
+
+      {/* 经济系统配置 */}
+      <div className="mt-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-bold text-green-300">💰 经济系统配置</h2>
+            <p className="text-sm text-gray-400 mt-1">配置游戏内的货币系统</p>
+          </div>
+          <button
+            onClick={handleSaveEconomy}
+            disabled={economySaving || economyLoading}
+            className="px-4 py-2 bg-green-600 hover:bg-green-500 rounded-lg transition-colors disabled:opacity-50"
+          >
+            {economySaving ? '保存中...' : '💾 保存配置'}
+          </button>
+        </div>
+
+        <div className="bg-slate-700/50 rounded-xl p-6 border border-slate-600 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                游戏内货币名称 *
+              </label>
+              <input
+                type="text"
+                value={economy.currency_name}
+                onChange={(e) => setEconomy({ ...economy, currency_name: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-600 border border-slate-500 rounded-lg focus:ring-2 focus:ring-green-500 text-white"
+                placeholder="例如：金币、信用点、铜币"
+                disabled={economyLoading}
+              />
+              <p className="text-xs text-gray-500 mt-1">用于购买游戏内的物品、服务、食物等</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                付费货币名称 *
+              </label>
+              <input
+                type="text"
+                value={economy.gem_name}
+                onChange={(e) => setEconomy({ ...economy, gem_name: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-600 border border-slate-500 rounded-lg focus:ring-2 focus:ring-green-500 text-white"
+                placeholder="例如：宝石、钻石、水晶"
+                disabled={economyLoading}
+              />
+              <p className="text-xs text-gray-500 mt-1">用于购买不影响游戏平衡的装饰性道具</p>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              货币购买范围规则
+            </label>
+            <textarea
+              value={economy.currency_rules}
+              onChange={(e) => setEconomy({ ...economy, currency_rules: e.target.value })}
+              className="w-full px-3 py-2 bg-slate-600 border border-slate-500 rounded-lg focus:ring-2 focus:ring-green-500 text-white h-32"
+              placeholder="例如：信用点用于购买游戏内的物品、服务、食物、装备、情报等。宝石用于购买不影响游戏平衡的装饰性道具，如角色皮肤、配饰、特效等。"
+              disabled={economyLoading}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              AI 会根据这个规则判断玩家消费时应该使用哪种货币
+            </p>
+          </div>
         </div>
       </div>
     </div>

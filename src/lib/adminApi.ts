@@ -284,6 +284,28 @@ export const adminApi = {
       }
     ),
 
+  // Economy
+  getEconomyConfig: (worldId = 'world_1') =>
+    fetchAdminApi<{
+      world_id: string;
+      currency_name: string;
+      gem_name: string;
+      currency_rules: string;
+    }>(`/world/economy?world_id=${worldId}`),
+
+  updateEconomyConfig: (
+    data: {
+      currency_name?: string;
+      gem_name?: string;
+      currency_rules?: string;
+    },
+    worldId = 'world_1'
+  ) =>
+    fetchAdminApi<{ success: boolean }>('/world/economy', {
+      method: 'PUT',
+      body: JSON.stringify({ ...data, world_id: worldId }),
+    }),
+
   // Avatars (public, no auth required)
   listAvatars: () =>
     fetchAdminApi<{
