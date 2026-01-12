@@ -10,10 +10,20 @@ import { adminApi } from '@/lib/adminApi';
 type GamePhase = 'checking' | 'avatar_select' | 'loading' | 'playing' | 'error';
 
 export default function Home() {
-  const { isLoading, error, initGame, world } = useGameStore();
+  const { isLoading, error, initGame, world, gamePhase: storeGamePhase } = useGameStore();
   const [phase, setPhase] = useState<GamePhase>('checking');
   const [initError, setInitError] = useState<string | null>(null);
   const [initialized, setInitialized] = useState(false);
+
+  // 监听 store 的 gamePhase 变化（用于新游戏）
+  useEffect(() => {
+    if (storeGamePhase === 'new_game') {
+      // 清除本地存储，重新开始
+      localStorage.removeItem('hasSelectedAvatar');
+      setPhase('avatar_select');
+      setInitialized(false);
+    }
+  }, [storeGamePhase]);
 
   // Initialize game on mount
   const initialize = useCallback(async () => {
