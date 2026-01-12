@@ -894,7 +894,7 @@ function RulesTab() {
   }
 
   return (
-    <div>
+    <div className="space-y-8">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-bold text-yellow-300">📜 世界规则</h2>
@@ -1100,7 +1100,7 @@ export default function AdminPage() {
       </nav>
 
       {/* Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8 overflow-y-auto">
         {activeTab === 'characters' && <CharactersTab />}
         {activeTab === 'locations' && <LocationsTab />}
         {activeTab === 'rules' && <RulesTab />}
