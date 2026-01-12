@@ -230,7 +230,8 @@ export const useGameStore = create<GameState>((set, get) => ({
         isProcessing: false,
       });
       
-      // Refresh full state after action (货币已更新)
+      // 如果场景变化了，必须刷新完整状态以加载新场景
+      // 否则只刷新状态（货币已更新）
       await get().refreshState();
     } catch (err) {
       set({
