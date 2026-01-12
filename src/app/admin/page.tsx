@@ -634,6 +634,7 @@ function LocationsTab() {
   const [locations, setLocations] = useState<LocationTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingLoc, setEditingLoc] = useState<LocationTemplate | null | 'new'>(null);
+  const [importing, setImporting] = useState(false);
 
   const loadLocations = useCallback(async () => {
     try {
@@ -649,6 +650,22 @@ function LocationsTab() {
   useEffect(() => {
     loadLocations();
   }, [loadLocations]);
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImporting(true);
+    try {
+      await adminApi.importLocationPng(file);
+      await loadLocations();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '导入失败');
+    } finally {
+      setImporting(false);
+      e.target.value = '';
+    }
+  };
 
   const handleDelete = async (loc: LocationTemplate) => {
     if (!confirm(`确定要删除场景「${loc.name}」吗？`)) return;
@@ -686,12 +703,24 @@ function LocationsTab() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-bold text-green-300">🏠 场景库</h2>
-        <button
-          onClick={() => setEditingLoc('new')}
-          className="px-4 py-2 bg-green-600 hover:bg-green-500 rounded-lg transition-colors"
-        >
-          ➕ 新建场景
-        </button>
+        <div className="flex gap-3">
+          <label className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg cursor-pointer transition-colors">
+            <span>{importing ? '导入中...' : '📥 导入 PNG'}</span>
+            <input
+              type="file"
+              accept=".png"
+              onChange={handleImport}
+              className="hidden"
+              disabled={importing}
+            />
+          </label>
+          <button
+            onClick={() => setEditingLoc('new')}
+            className="px-4 py-2 bg-green-600 hover:bg-green-500 rounded-lg transition-colors"
+          >
+            ➕ 新建场景
+          </button>
+        </div>
       </div>
 
       {locations.length === 0 ? (

@@ -205,6 +205,31 @@ export const adminApi = {
   listLocations: () =>
     fetchAdminApi<{ locations: LocationTemplate[] }>('/locations'),
 
+  importLocationPng: async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(`${API_BASE}/locations/import`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: '导入失败' }));
+      throw new Error(error.detail || `HTTP ${response.status}`);
+    }
+
+    return response.json() as Promise<{
+      success: boolean;
+      id: string;
+      name: string;
+      message: string;
+    }>;
+  },
+
   getLocation: (id: string) =>
     fetchAdminApi<LocationTemplate>(`/locations/${id}`),
 
