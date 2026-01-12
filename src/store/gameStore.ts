@@ -284,7 +284,7 @@ export const useGameStore = create<GameState>((set, get) => ({
         isProcessing: false,
         npcs: updatedNpcs,
         // 如果正在对话的 NPC 立绘更新了，也要更新 talkingToNpc
-        talkingToNpc: talkingToNpc.id === result.npc_id 
+        talkingToNpc: talkingToNpc.id === talkingToNpc.id 
           ? { ...talkingToNpc, emotion: result.emotion, portrait_url: result.portrait_url || talkingToNpc.portrait_url }
           : talkingToNpc
       });
