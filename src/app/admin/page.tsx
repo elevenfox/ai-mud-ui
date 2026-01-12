@@ -107,17 +107,17 @@ function CharacterEditor({
         name: form.name,
         description: form.description,
         personality: form.personality,
-        first_message: form.first_message || null,
-        scenario: form.scenario || null,
+        first_message: form.first_message || undefined,
+        scenario: form.scenario || undefined,
         example_dialogs: form.example_dialogs
           ? form.example_dialogs.split('---').map((s) => s.trim()).filter(Boolean)
           : [],
         tags: form.tags
           ? form.tags.split(',').map((s) => s.trim()).filter(Boolean)
           : [],
-        gender: form.gender || null,
-        age: form.age ? parseInt(form.age, 10) : null,
-        occupation: form.occupation || null,
+        gender: form.gender || undefined,
+        age: form.age ? parseInt(form.age, 10) : undefined,
+        occupation: form.occupation || undefined,
         is_player_avatar: form.is_player_avatar,
       };
 
@@ -857,18 +857,6 @@ function RulesTab() {
       alert(err instanceof Error ? err.message : '保存失败');
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handleSaveEconomy = async () => {
-    setEconomySaving(true);
-    try {
-      await adminApi.updateEconomyConfig(economy);
-      alert('经济配置保存成功');
-    } catch (err) {
-      alert(err instanceof Error ? err.message : '保存失败');
-    } finally {
-      setEconomySaving(false);
     }
   };
 
