@@ -9,7 +9,9 @@ export function TopBar() {
   const { world, player, saveCheckpoint, startNewGame, listCheckpoints, loadCheckpoint } = useGameStore();
   const [showMenu, setShowMenu] = useState(false);
   const [showSaveConfirm, setShowSaveConfirm] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
   const [showLoadModal, setShowLoadModal] = useState(false);
+  const [saveTitle, setSaveTitle] = useState('');
   const [checkpoints, setCheckpoints] = useState<Array<{
     id: string;
     description: string;
@@ -31,11 +33,31 @@ export function TopBar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // 生成默认存档标题
+  const getDefaultSaveTitle = () => {
+    const playerName = player?.name || '未知玩家';
+    const locationName = world?.name || '未知地点';
+    const time = new Date().toLocaleString('zh-CN', {
+      month: 'numeric',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    return `${playerName} @ ${locationName} - ${time}`;
+  };
+
+  const handleOpenSaveModal = () => {
+    setShowMenu(false);
+    setSaveTitle(''); // 清空输入
+    setShowSaveModal(true);
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
-    setShowMenu(false);
-    await saveCheckpoint(`手动存档 - ${new Date().toLocaleString('zh-CN')}`);
+    const title = saveTitle.trim() || getDefaultSaveTitle();
+    await saveCheckpoint(title);
     setIsSaving(false);
+    setShowSaveModal(false);
     setShowSaveConfirm(true);
     setTimeout(() => setShowSaveConfirm(false), 2000);
   };
@@ -144,7 +166,7 @@ export function TopBar() {
                 <MenuItem 
                   icon="💾" 
                   label="保存" 
-                  onClick={handleSave}
+                  onClick={handleOpenSaveModal}
                   disabled={isSaving}
                   description={isSaving ? '保存中...' : '保存当前进度'}
                 />
@@ -180,6 +202,72 @@ export function TopBar() {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* Save Modal */}
+      <AnimatePresence>
+        {showSaveModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+            onClick={() => setShowSaveModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-cyber-dark border border-cyber-blue/50 rounded-lg p-6 max-w-md w-full mx-4"
+              onClick={e => e.stopPropagation()}
+            >
+              <h2 className="text-xl font-display text-cyber-blue mb-4">💾 保存游戏</h2>
+              
+              <div className="mb-4">
+                <label className="block text-sm text-gray-400 mb-2">
+                  存档标题 <span className="text-gray-600">(可选)</span>
+                </label>
+                <input
+                  type="text"
+                  value={saveTitle}
+                  onChange={(e) => setSaveTitle(e.target.value)}
+                  placeholder={getDefaultSaveTitle()}
+                  className="w-full px-4 py-2 bg-cyber-dark/50 border border-gray-600 focus:border-cyber-blue rounded-lg text-gray-200 placeholder-gray-500 outline-none transition-colors"
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !isSaving) {
+                      handleSave();
+                    }
+                  }}
+                />
+                <p className="text-xs text-gray-500 mt-2">
+                  留空将使用默认标题：{getDefaultSaveTitle()}
+                </p>
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowSaveModal(false)}
+                  className="flex-1 py-2 border border-gray-600 text-gray-400 hover:text-white hover:border-gray-500 rounded-lg transition-colors"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className={clsx(
+                    'flex-1 py-2 rounded-lg transition-colors',
+                    isSaving
+                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                      : 'bg-cyber-green/20 border border-cyber-green text-cyber-green hover:bg-cyber-green/30'
+                  )}
+                >
+                  {isSaving ? '保存中...' : '确认保存'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Load Modal */}
       <AnimatePresence>
