@@ -69,6 +69,9 @@ export interface CharacterTemplate {
   scenario?: string;
   example_dialogs: string[];
   tags: string[];
+  gender?: string;  // male, female, other, unknown
+  age?: number;
+  occupation?: string;
   is_player_avatar: boolean;
   initial_attributes: Record<string, unknown>;
   raw_card_data?: Record<string, unknown>;

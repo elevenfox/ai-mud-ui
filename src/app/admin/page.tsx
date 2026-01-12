@@ -89,6 +89,9 @@ function CharacterEditor({
     scenario: character?.scenario || '',
     example_dialogs: character?.example_dialogs?.join('\n---\n') || '',
     tags: character?.tags?.join(', ') || '',
+    gender: character?.gender || '',
+    age: character?.age?.toString() || '',
+    occupation: character?.occupation || '',
     is_player_avatar: character?.is_player_avatar || false,
   });
   const [saving, setSaving] = useState(false);
@@ -112,6 +115,9 @@ function CharacterEditor({
         tags: form.tags
           ? form.tags.split(',').map((s) => s.trim()).filter(Boolean)
           : [],
+        gender: form.gender || null,
+        age: form.age ? parseInt(form.age, 10) : null,
+        occupation: form.occupation || null,
         is_player_avatar: form.is_player_avatar,
       };
 
@@ -155,6 +161,44 @@ function CharacterEditor({
                 onChange={(e) => setForm({ ...form, tags: e.target.value })}
                 className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-purple-500 text-white"
                 placeholder="逗号分隔"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">性别</label>
+              <select
+                value={form.gender}
+                onChange={(e) => setForm({ ...form, gender: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-purple-500 text-white"
+              >
+                <option value="">未设置</option>
+                <option value="male">男性</option>
+                <option value="female">女性</option>
+                <option value="other">其他</option>
+                <option value="unknown">未知</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">年龄</label>
+              <input
+                type="number"
+                value={form.age}
+                onChange={(e) => setForm({ ...form, age: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-purple-500 text-white"
+                placeholder="数字"
+                min="0"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">职业</label>
+              <input
+                type="text"
+                value={form.occupation}
+                onChange={(e) => setForm({ ...form, occupation: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-purple-500 text-white"
+                placeholder="职业/身份"
               />
             </div>
           </div>
@@ -516,6 +560,20 @@ function CharactersTab() {
                     )}
                   </div>
                   <p className="text-sm text-gray-400 line-clamp-2 mt-1">{char.description || '暂无描述'}</p>
+                  
+                  {/* 角色属性 */}
+                  {(char.gender || char.age || char.occupation) && (
+                    <div className="flex gap-2 mt-2 text-xs text-gray-500">
+                      {char.gender && (
+                        <span>
+                          {char.gender === 'male' ? '♂' : char.gender === 'female' ? '♀' : '⚧'} {char.gender === 'male' ? '男' : char.gender === 'female' ? '女' : char.gender === 'other' ? '其他' : '未知'}
+                        </span>
+                      )}
+                      {char.age && <span>• {char.age} 岁</span>}
+                      {char.occupation && <span>• {char.occupation}</span>}
+                    </div>
+                  )}
+                  
                   {char.tags && char.tags.length > 0 && (
                     <div className="flex gap-1 mt-2 flex-wrap">
                       {char.tags.slice(0, 3).map((tag) => (
