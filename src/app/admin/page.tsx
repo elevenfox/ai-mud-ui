@@ -96,6 +96,7 @@ function CharacterEditor({
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [generatingPortrait, setGeneratingPortrait] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -263,6 +264,31 @@ function CharacterEditor({
             </label>
           </div>
 
+          {!isNew && character && (
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!character) return;
+                  setGeneratingPortrait(true);
+                  try {
+                    const result = await adminApi.generateCharacterPortrait(character.id);
+                    alert(`立绘生成成功！\n路径: ${result.portrait_path}`);
+                    onSave(); // 刷新列表
+                  } catch (err) {
+                    alert(err instanceof Error ? err.message : '生成失败');
+                  } finally {
+                    setGeneratingPortrait(false);
+                  }
+                }}
+                disabled={generatingPortrait}
+                className="flex-1 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 rounded-lg text-white font-semibold transition-all disabled:opacity-50"
+              >
+                {generatingPortrait ? '🎨 生成中...' : '🎨 AI 生成立绘'}
+              </button>
+            </div>
+          )}
+
           {error && (
             <div className="text-red-400 text-sm bg-red-500/10 py-2 px-3 rounded-lg">{error}</div>
           )}
@@ -308,6 +334,7 @@ function LocationEditor({
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [generatingBackground, setGeneratingBackground] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -389,6 +416,31 @@ function LocationEditor({
               🚀 可作为初始场景（游戏开始时随机选择）
             </label>
           </div>
+
+          {!isNew && location && (
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!location) return;
+                  setGeneratingBackground(true);
+                  try {
+                    const result = await adminApi.generateLocationBackground(location.id);
+                    alert(`背景生成成功！\n路径: ${result.background_path}`);
+                    onSave(); // 刷新列表
+                  } catch (err) {
+                    alert(err instanceof Error ? err.message : '生成失败');
+                  } finally {
+                    setGeneratingBackground(false);
+                  }
+                }}
+                disabled={generatingBackground}
+                className="flex-1 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 rounded-lg text-white font-semibold transition-all disabled:opacity-50"
+              >
+                {generatingBackground ? '🎨 生成中...' : '🎨 AI 生成背景'}
+              </button>
+            </div>
+          )}
 
           {error && (
             <div className="text-red-400 text-sm bg-red-500/10 py-2 px-3 rounded-lg">{error}</div>

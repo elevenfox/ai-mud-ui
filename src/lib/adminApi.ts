@@ -201,6 +201,12 @@ export const adminApi = {
     }>;
   },
 
+  generateCharacterPortrait: async (id: string) =>
+    fetchAdminApi<{ success: boolean; portrait_path: string }>(
+      `/characters/${id}/generate-portrait`,
+      { method: 'POST' }
+    ),
+
   // Locations
   listLocations: () =>
     fetchAdminApi<{ locations: LocationTemplate[] }>('/locations'),
@@ -272,6 +278,12 @@ export const adminApi = {
       background_path: string;
     }>;
   },
+
+  generateLocationBackground: async (id: string) =>
+    fetchAdminApi<{ success: boolean; background_path: string }>(
+      `/locations/${id}/generate-background`,
+      { method: 'POST' }
+    ),
 
   exportLocationPng: async (id: string, name: string) => {
     const response = await fetch(`${API_BASE}/locations/${id}/export`, {
