@@ -51,6 +51,13 @@ export const api = {
         portrait_url?: string;
         personality?: string;
         background?: string;
+        currency: number;
+        gems: number;
+      };
+      economy: {
+        currency_name: string;
+        gem_name: string;
+        currency_rules: string;
       };
       choices: {
         narrative: string;

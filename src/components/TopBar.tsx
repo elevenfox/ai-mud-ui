@@ -6,7 +6,7 @@ import { useGameStore } from '@/store/gameStore';
 import clsx from 'clsx';
 
 export function TopBar() {
-  const { world, player, saveCheckpoint, startNewGame, listCheckpoints, loadCheckpoint } = useGameStore();
+  const { world, player, economy, saveCheckpoint, startNewGame, listCheckpoints, loadCheckpoint } = useGameStore();
   const [showMenu, setShowMenu] = useState(false);
   const [showSaveConfirm, setShowSaveConfirm] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
@@ -124,6 +124,20 @@ export function TopBar() {
           <span className="text-sm text-gray-400">
             扮演 <span className="text-cyber-green">{player?.name || '未知'}</span>
           </span>
+          
+          {/* Economy display */}
+          {player && economy && (
+            <div className="flex items-center gap-3 text-xs">
+              <div className="flex items-center gap-1 text-yellow-400">
+                <span>💰</span>
+                <span>{player.currency} {economy.currency_name}</span>
+              </div>
+              <div className="flex items-center gap-1 text-purple-400">
+                <span>💎</span>
+                <span>{player.gems} {economy.gem_name}</span>
+              </div>
+            </div>
+          )}
           
           {/* Inventory summary */}
           {player?.inventory && player.inventory.length > 0 && (

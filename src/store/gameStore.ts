@@ -43,6 +43,12 @@ export interface WorldState {
   flags: Record<string, boolean>;
 }
 
+export interface EconomyInfo {
+  currency_name: string;
+  gem_name: string;
+  currency_rules: string;
+}
+
 export interface Player {
   id: string;
   name: string;
@@ -50,6 +56,8 @@ export interface Player {
   portrait_url?: string;
   personality?: string;
   background?: string;
+  currency: number;
+  gems: number;
   position: 'left' | 'center' | 'right';
 }
 
@@ -80,6 +88,7 @@ interface GameState {
   location: Location | null;
   npcs: NPC[];
   player: Player | null;
+  economy: EconomyInfo | null;
   
   // Game state
   choices: ChoicesResponse | null;
@@ -118,6 +127,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   location: null,
   npcs: [],
   player: null,
+  economy: null,
   choices: null,
   events: [],
   currentNarrative: '',
@@ -139,6 +149,7 @@ export const useGameStore = create<GameState>((set, get) => ({
         location: state.location,
         npcs: state.npcs,
         player: state.player,
+        economy: state.economy,
         choices: state.choices,
         events: eventsRes.events,
         currentNarrative: state.choices?.narrative || '',
@@ -270,6 +281,7 @@ export const useGameStore = create<GameState>((set, get) => ({
         location: state.location,
         npcs: state.npcs,
         player: state.player,
+        economy: state.economy,
         choices: state.choices,
         events: eventsRes.events,
       });
