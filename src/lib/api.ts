@@ -124,6 +124,7 @@ export const api = {
   talkToNpc: (worldId: string, playerId: string, npcId: string, message: string) =>
     fetchApi<{
       npc_name: string;
+      npc_id?: string;
       response: string;
       emotion: string;
       relationship: number;

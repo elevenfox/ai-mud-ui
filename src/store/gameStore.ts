@@ -267,16 +267,30 @@ export const useGameStore = create<GameState>((set, get) => ({
       const result = await api.talkToNpc(worldId, playerId, talkingToNpc.id, message);
       
       // Add NPC response
+      // Update NPC emotion and portrait (if changed)
+      const updatedNpcs = get().npcs.map(n => 
+        n.id === talkingToNpc.id 
+          ? { 
+              ...n, 
+              emotion: result.emotion, 
+              relationship: result.relationship,
+              portrait_url: result.portrait_url || n.portrait_url  // 更新立绘（如果返回了新立绘）
+            }
+          : n
+      );
+      
       set({
         dialogHistory: [...newHistory, { role: 'npc' as const, content: result.response }],
         isProcessing: false,
-        // Update NPC emotion
-        npcs: get().npcs.map(n => 
-          n.id === talkingToNpc.id 
-            ? { ...n, emotion: result.emotion, relationship: result.relationship }
-            : n
-        ),
+        npcs: updatedNpcs,
+        // 如果正在对话的 NPC 立绘更新了，也要更新 talkingToNpc
+        talkingToNpc: talkingToNpc.id === result.npc_id 
+          ? { ...talkingToNpc, emotion: result.emotion, portrait_url: result.portrait_url || talkingToNpc.portrait_url }
+          : talkingToNpc
       });
+      
+      // 刷新完整状态以更新场景中的 NPC 立绘
+      await get().refreshState();
     } catch (err) {
       set({
         isProcessing: false,
