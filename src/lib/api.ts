@@ -107,6 +107,8 @@ export const api = {
       success: boolean;
       narrative: string;
       mood: string;
+      location_changed?: boolean;
+      new_location?: string;
       currency_change?: number;
       gems_change?: number;
     }>('/choice/custom', {
