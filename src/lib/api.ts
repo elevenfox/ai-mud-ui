@@ -90,6 +90,8 @@ export const api = {
       narrative: string;
       choices?: Array<{ id: string; text: string; hint?: string }>;
       mood: string;
+      currency_change?: number;
+      gems_change?: number;
     }>('/choice/select', {
       method: 'POST',
       body: JSON.stringify({
@@ -105,6 +107,8 @@ export const api = {
       success: boolean;
       narrative: string;
       mood: string;
+      currency_change?: number;
+      gems_change?: number;
     }>('/choice/custom', {
       method: 'POST',
       body: JSON.stringify({

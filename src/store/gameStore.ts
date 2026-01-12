@@ -163,7 +163,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   selectChoice: async (choiceId: string) => {
-    const { worldId, playerId, choices } = get();
+    const { worldId, playerId, choices, economy } = get();
     if (!worldId || !playerId || !choices) return;
     
     set({ isProcessing: true });
@@ -171,12 +171,23 @@ export const useGameStore = create<GameState>((set, get) => ({
     try {
       const result = await api.selectChoice(worldId, playerId, choiceId, choices.choices);
       
+      // 构建货币变化提示
+      let currencyHint = '';
+      if (result.currency_change && economy) {
+        const sign = result.currency_change > 0 ? '+' : '';
+        currencyHint = `\n\n💰 ${sign}${result.currency_change} ${economy.currency_name}`;
+      }
+      if (result.gems_change && economy) {
+        const sign = result.gems_change > 0 ? '+' : '';
+        currencyHint += `\n💎 ${sign}${result.gems_change} ${economy.gem_name}`;
+      }
+      
       set({
-        currentNarrative: result.narrative,
+        currentNarrative: result.narrative + currencyHint,
         isProcessing: false,
       });
       
-      // Refresh full state after action
+      // Refresh full state after action (货币已更新)
       await get().refreshState();
     } catch (err) {
       set({
@@ -187,7 +198,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   submitCustomAction: async (action: string) => {
-    const { worldId, playerId } = get();
+    const { worldId, playerId, economy } = get();
     if (!worldId || !playerId) return;
     
     set({ isProcessing: true });
@@ -203,11 +214,23 @@ export const useGameStore = create<GameState>((set, get) => ({
         return;
       }
       
+      // 构建货币变化提示
+      let currencyHint = '';
+      if (result.currency_change && economy) {
+        const sign = result.currency_change > 0 ? '+' : '';
+        currencyHint = `\n\n💰 ${sign}${result.currency_change} ${economy.currency_name}`;
+      }
+      if (result.gems_change && economy) {
+        const sign = result.gems_change > 0 ? '+' : '';
+        currencyHint += `\n💎 ${sign}${result.gems_change} ${economy.gem_name}`;
+      }
+      
       set({
-        currentNarrative: result.narrative,
+        currentNarrative: result.narrative + currencyHint,
         isProcessing: false,
       });
       
+      // Refresh full state after action (货币已更新)
       await get().refreshState();
     } catch (err) {
       set({
