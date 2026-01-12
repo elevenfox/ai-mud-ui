@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore, NPC, Player } from '@/store/gameStore';
 import clsx from 'clsx';
+import { useMemo } from 'react';
 
 /**
  * CharacterDisplay - 沉浸式角色立绘显示组件
@@ -24,6 +25,39 @@ const SPRITE_CONFIG = {
   // 最大/最小尺寸限制
   constraints: 'min-h-[400px] max-h-[800px]',
 };
+
+// 默认女性剪影图片（用于没有立绘的角色）
+const FEMALE_SHADOW_IMAGES = [
+  '/static/preset/female-shadow/female-shad-1.png',
+  '/static/preset/female-shadow/female-shad-2.png',
+  '/static/preset/female-shadow/female-shad-3.png',
+  '/static/preset/female-shadow/female-shad-4.png',
+  '/static/preset/female-shadow/female-shad-5.png',
+  '/static/preset/female-shadow/female-shad-6.png',
+  '/static/preset/female-shadow/female-shad-7.png',
+];
+
+/**
+ * 根据角色 ID 生成稳定的随机索引
+ * 确保同一角色每次显示同一张剪影
+ */
+function getStableRandomIndex(id: string, arrayLength: number): number {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    const char = id.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return Math.abs(hash) % arrayLength;
+}
+
+/**
+ * 获取角色的默认立绘（剪影）
+ */
+function getDefaultPortrait(characterId: string): string {
+  const index = getStableRandomIndex(characterId, FEMALE_SHADOW_IMAGES.length);
+  return FEMALE_SHADOW_IMAGES[index];
+}
 
 export function CharacterDisplay() {
   const { npcs, player, startTalkingTo, talkingToNpc } = useGameStore();
@@ -117,6 +151,11 @@ interface PlayerSpriteProps {
 function PlayerSprite({ player, position }: PlayerSpriteProps) {
   const slideDirection = position === 'left' ? -100 : position === 'right' ? 100 : 0;
   
+  // 获取立绘图片：有 portrait_url 用它，否则用默认剪影
+  const portraitUrl = useMemo(() => {
+    return player.portrait_url || getDefaultPortrait(player.id);
+  }, [player.id, player.portrait_url]);
+  
   return (
     <motion.div
       initial={{ opacity: 0, x: slideDirection, y: 50 }}
@@ -133,20 +172,18 @@ function PlayerSprite({ player, position }: PlayerSpriteProps) {
         SPRITE_CONFIG.constraints,
         'shadow-2xl shadow-cyber-pink/20'
       )}>
-        {player.portrait_url ? (
-          <img
-            src={player.portrait_url}
-            alt={player.name}
-            className="w-full h-full object-cover object-top"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-cyber-dark/60 to-cyber-dark/90">
-            <span className="text-8xl text-cyber-pink/50">{player.name[0]}</span>
-          </div>
-        )}
+        <img
+          src={portraitUrl}
+          alt={player.name}
+          className="w-full h-full object-cover object-top"
+          onError={(e) => {
+            // 如果图片加载失败，显示默认剪影
+            const target = e.target as HTMLImageElement;
+            if (!target.src.includes('female-shad')) {
+              target.src = getDefaultPortrait(player.id);
+            }
+          }}
+        />
 
         {/* 底部渐变遮罩 - 让名字更易读 */}
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/80 to-transparent" />
@@ -194,6 +231,11 @@ function CharacterSprite({ npc, position, highlighted, onClick }: CharacterSprit
   // 进入动画方向
   const slideDirection = position === 'left' ? -100 : position === 'right' ? 100 : 0;
   
+  // 获取立绘图片：有 portrait_url 用它，否则用默认剪影
+  const portraitUrl = useMemo(() => {
+    return npc.portrait_url || getDefaultPortrait(npc.id);
+  }, [npc.id, npc.portrait_url]);
+  
   return (
     <motion.div
       initial={{ opacity: 0, x: slideDirection, y: 50 }}
@@ -223,23 +265,21 @@ function CharacterSprite({ npc, position, highlighted, onClick }: CharacterSprit
           highlighted && 'ring-2 ring-cyber-blue/50'
         )}
       >
-        {npc.portrait_url ? (
-          <img
-            src={npc.portrait_url}
-            alt={npc.name}
-            className="w-full h-full object-cover object-top"
-            style={{
-              filter: highlighted ? 'none' : 'brightness(0.85) saturate(0.9)',
-            }}
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-cyber-dark/60 to-cyber-dark/90">
-            <span className="text-8xl text-cyber-blue/50">{npc.name[0]}</span>
-          </div>
-        )}
+        <img
+          src={portraitUrl}
+          alt={npc.name}
+          className="w-full h-full object-cover object-top"
+          style={{
+            filter: highlighted ? 'none' : 'brightness(0.85) saturate(0.9)',
+          }}
+          onError={(e) => {
+            // 如果图片加载失败，显示默认剪影
+            const target = e.target as HTMLImageElement;
+            if (!target.src.includes('female-shad')) {
+              target.src = getDefaultPortrait(npc.id);
+            }
+          }}
+        />
 
         {/* 底部渐变遮罩 */}
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/80 to-transparent" />
